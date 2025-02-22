@@ -45,9 +45,11 @@ impl<T> LinkedList<T> {
     }
 
     pub fn add(&mut self, obj: T) {
-        let mut node = Box::new(Node::new(obj));
+        // 阶段1：创建Box（拥有完全所有权）
+        let mut node:Box<Node<T>> = Box::new(Node::new(obj));
         node.next = None;
-        let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(node)) });
+        // 阶段2：将Box转换为原始指针（转移所有权）, 并包装成NonNull（保证非空），最后包装成Option（为了可以表示空值）
+        let node_ptr: Option<NonNull<Node<T>>> = Some(unsafe { NonNull::new_unchecked(Box::into_raw(node)) });
         match self.end {
             None => self.start = node_ptr,
             Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
@@ -70,13 +72,62 @@ impl<T> LinkedList<T> {
         }
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
+	where 
+        T : PartialOrd
+    {
 		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut list_a = list_a;
+        let mut list_b = list_b;
+        
+        let mut result = LinkedList::new();
+        // 通过两个临时指针操作链表Option<Box<Node<T>>>
+        let mut a_pointer = list_a.start.take();
+        let mut b_pointer = list_b.start.take();
+        // 追踪当前合并位置
+        let mut current = &mut result.start;
+
+        // 交替合并
+        while a_pointer.is_some() && b_pointer.is_some() {
+            // Some<Box<Node<T>>> => Box<Node<T>>
+            let a_node = a_pointer.unwrap();
+            let b_node = b_pointer.unwrap();
+            
+            unsafe {
+                // mut Node<T>
+                if a_node.as_ref().val <= b_node.as_ref().val {
+                    // result.start = a_pointer
+                    *current = a_pointer;
+                    a_pointer = a_node.as_ref().next;
+                } else {
+                    // result.start = b_pointer
+                    *current = b_pointer;
+                    b_pointer = b_node.as_ref().next;
+                }
+                // 移动指针 current = &mut result.start.as_mut().unwrap().next
+                current = &mut (*current).as_mut().unwrap().as_mut().next;
+            }
+
         }
+
+        // 直接链接剩余节点
+        *current = if a_pointer.is_some() { a_pointer } else { b_pointer };
+        // 更新链表长度和尾指针
+        result.length = list_a.length + list_b.length;
+        result.end = if let Some(end) = result.start {
+            // 引用指针
+            let mut current = end;
+            while let Some(next) = unsafe { current.as_ref().next } {
+                // 如果next为Some<Box<Node<T>>>，则移动指针
+                current = next
+            }
+            Some(current)
+        } else {
+            // 两个list都是空的，也就是start为None
+            None
+        };
+
+
+		result
 	}
 }
 
