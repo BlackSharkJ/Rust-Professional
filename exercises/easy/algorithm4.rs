@@ -50,13 +50,26 @@ where
 
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
-        //TODO
+        if let Some(ref mut root) = self.root {
+            root.insert(value);
+        } else {
+            self.root = Some(Box::new(TreeNode::new(value)));
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        // true
+        let mut current = &self.root;
+        while let Some(node) = current {
+            match value.cmp(&node.value) {
+                Ordering::Less => current = &node.left,
+                Ordering::Greater => current = &node.right,
+                Ordering::Equal => return true,
+            }
+        }
+        false
     }
 }
 
@@ -67,6 +80,53 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+        // self: Option<Box<TreeNode<T>>>
+        // if self.value == value {
+        //     return;
+        // } else if self.value < value {
+        //     // right insert
+        //     if let Some(ref mut right) = self.right {
+        //         // 如果有右节点，则指针移动到右节点，再次尝试插入
+        //         right.insert(value);
+        //     } else {
+        //         // 如果没有右节点，则插入一个值
+        //         self.right = Some(Box::new(TreeNode::new(value)));
+        //         return;
+        //     }
+        // } else {
+        //     // left insert
+        //     if let Some(ref mut left) = self.left {
+        //         // 如果有左节点，则指针移动到左节点，再次尝试插入
+        //         left.insert(value);
+        //     } else {
+        //         // 如果没有左节点，则插入一个值
+        //         self.left = Some(Box::new(TreeNode::new(value)));
+        //         return;
+        //     }
+
+        // }
+    
+        match value.cmp(&self.value) {
+            Ordering::Less => {
+                // left insert
+                if let Some(ref mut left) = self.left {
+                    left.insert(value);
+                } else {
+                    self.left = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Ordering::Greater => {
+                // right insert
+                if let Some(ref mut right) = self.right {
+                    right.insert(value);
+                } else {
+                    self.right = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Ordering::Equal => {
+                // 不插入重复值
+            }
+        }
     }
 }
 

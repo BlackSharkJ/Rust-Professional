@@ -15,3 +15,35 @@ log4rs = "1.0"
 [[test]]
 name = "test1"
 path = "exercises/easy/algorithm1.rs"
+
+[[test]]
+name = "test2"
+path = "exercises/easy/algorithm2.rs"
+
+[[test]]
+name = "test3"
+path = "exercises/easy/algorithm3.rs"
+
+[[test]]
+name = "test4"
+path = "exercises/easy/algorithm4.rs"
+
+[[test]]
+name = "test5"
+path = "exercises/easy/algorithm5.rs"
+
+[[test]]
+name = "test6"
+path = "exercises/easy/algorithm6.rs"
+
+[[test]]
+name = "test7"
+path = "exercises/easy/algorithm7.rs"
+
+[[test]]
+name = "test8"
+path = "exercises/easy/algorithm8.rs"
+
+[[test]]
+name = "test9"
+path = "exercises/easy/algorithm9.rs"
