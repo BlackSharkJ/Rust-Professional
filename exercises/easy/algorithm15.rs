@@ -1,19 +1,31 @@
 /*
     Longest Substring Without Repeating Characters
-    Given a string, find the length of the longest substring without repeating characters. 
+    Given a string, find the length of the longest substring without repeating characters.
     The substring must not contain any duplicate characters, and its length should be maximized.
 
     You need to implement the function `longest_substring_without_repeating_chars(s: String) -> i32`.
     The function should return the length of the longest substring without repeating characters.
-    
+
     Hint: Consider using the sliding window technique to efficiently solve this problem in O(n) time complexity.
 */
 
 use std::fmt::{self, Display, Formatter};
 
 pub fn longest_substring_without_repeating_chars(s: String) -> i32 {
-    // TODO: Implement the logic to find the longest substring without repeating characters
-    0 // Placeholder return value
+    let mut max_length = 0;
+    let mut start = 0;
+    let mut char_index_map = std::collections::HashMap::new();
+    let chars: Vec<char> = s.chars().collect();
+
+    for (end, &char) in chars.iter().enumerate() {
+        if let Some(&prev_index) = char_index_map.get(&char) {
+            start = std::cmp::max(start, prev_index + 1);
+        }
+        char_index_map.insert(char, end);
+        max_length = std::cmp::max(max_length, end - start + 1);
+    }
+
+    max_length as i32
 }
 
 #[cfg(test)]
@@ -25,7 +37,7 @@ mod tests {
         let s = "abcabcbb".to_string();
         let result = longest_substring_without_repeating_chars(s);
         println!("Length of longest substring: {}", result);
-        assert_eq!(result, 3);  // "abc"
+        assert_eq!(result, 3); // "abc"
     }
 
     #[test]
@@ -33,7 +45,7 @@ mod tests {
         let s = "bbbbb".to_string();
         let result = longest_substring_without_repeating_chars(s);
         println!("Length of longest substring: {}", result);
-        assert_eq!(result, 1);  // "b"
+        assert_eq!(result, 1); // "b"
     }
 
     #[test]
@@ -41,7 +53,7 @@ mod tests {
         let s = "pwwkew".to_string();
         let result = longest_substring_without_repeating_chars(s);
         println!("Length of longest substring: {}", result);
-        assert_eq!(result, 3);  // "wke"
+        assert_eq!(result, 3); // "wke"
     }
 
     #[test]
@@ -49,7 +61,7 @@ mod tests {
         let s = "".to_string();
         let result = longest_substring_without_repeating_chars(s);
         println!("Length of longest substring: {}", result);
-        assert_eq!(result, 0);  // Empty string
+        assert_eq!(result, 0); // Empty string
     }
 
     #[test]
@@ -57,6 +69,6 @@ mod tests {
         let s = "abcde".to_string();
         let result = longest_substring_without_repeating_chars(s);
         println!("Length of longest substring: {}", result);
-        assert_eq!(result, 5);  // "abcde"
+        assert_eq!(result, 5); // "abcde"
     }
 }
